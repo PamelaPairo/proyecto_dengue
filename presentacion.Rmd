@@ -1,0 +1,118 @@
+---
+title: "La problemática del dengue en Argentina"
+author: "Pamela E. Pairo"
+date: "2021/12/01 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: ["rladies", "rladies-fonts"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+options(htmltools.dir.version = FALSE)
+library(knitr)
+library(tidyverse)
+library(xaringanExtra)
+# set default options
+opts_chunk$set(echo=FALSE,
+               collapse = TRUE,
+               fig.width = 7.252,
+               fig.height = 4,
+               dpi = 300)
+xaringanExtra::use_tile_view()
+xaringanExtra::use_clipboard()
+xaringanExtra::use_webcam(width = 210, height = 220)
+xaringanExtra::use_broadcast()
+xaringanExtra::use_share_again()
+xaringanExtra::style_share_again(
+  share_buttons = c("twitter", "linkedin", "pocket")
+)
+```
+
+
+# Introducción del dengue en la Argentina
+
+- _Aedes aegypti_ es originario del oeste de África y fue introducido en América probablemente en los barcos de esclavos y en los containers de agua (Fischer et al. 2017).
+
+--
+
+- Los primeros registros de _A. aegypti_ en Argentina son de principios de siglo XX. 
+
+--
+
+- Fuerte campaña de erradicación entre 1940-1960 y se oficializa en 1963.
+
+--
+
+- Desde 1997 ha presentado en forma de brotes esporádicos en algunos puntos del norte del país (Vezzani and Carbajo 2008).
+
+--
+
+- En 2009 ocurrió la primera gran y muy extensa epidemia de dengue, que abarcó 14 jurisdicciones del país y casi 25 mil casos confirmados (Seijo et al. 2009)
+
+--
+
+- En 2016 se produjo uno de los brotes mas importantes en Argentina, con casi 40 mil casos confirmados autóctonos en 15 jurisdicciones junto con la co-circulación de los virus Zika y chikungunya, otras dos enfermedades transmitidas por mosquitos (en espacial _Aedes aegypti_ y _Aedes albopictus_)
+
+--
+
+- En 2019-2020, se registraron al Sistema Nacional de Vigilancia de la Salud 56.293 casos de dengue (entre probables y confirmados por laboratorio o nexo epidemiológico) sin antecedente de viaje.
+
+---
+
+#Situación a actual 
+
+cantidad de casos a nivel mundial y como aumento en los ultimos años
+
+y en argentina
+
+`r emo::ji("heavy_check_mark")` 
+
+Es un problema de salud pública
+
+---
+
+#Ciclo de vida de _Aedes aegypti_
+
+.center[<img src="images/ciclo.png" width="90%"/>]
+
+---
+
+# ¿ Qué favorece su expansión?
+
+relación con el hombre
+radio de acción
+antropofilico
+huevos de resistencia
+containers y recipientes
+le gusta picar a muchas personas
+pone huevos en varios recipientes
+---
+# Pregunta de investigación
+
+Hip.
+
+Proyección de los casos de dengue según los diferentes escenarios del cambio climático.
+
+
+---
+
+## Variables ambientales y factores socioeconómicos
+
+---
+
+# Mapa de casos por provincia
+
+---
+
+#Bibliografía
+
+- Fischer, S. et al. 2017. Long-Term spatio-Temporal dynamics of the mosquito Aedes aegypti in temperate Argentina. - Bull. Entomol. Res. 107: 225–233.
+
+- Seijo, A. et al. 2009. Brote de dengue autóctono en el área metropolitana Buenos Aires. - Med. (Buenos 69: 593–600.
+
+- Vezzani, D. and Carbajo, A. E. 2008. Aedes aegypti, Aedes albopictus, and dengue in Argentina: Current knowledge and future directions. - Mem. Inst. Oswaldo Cruz 103: 66–74.

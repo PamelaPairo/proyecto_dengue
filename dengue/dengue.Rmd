@@ -1,0 +1,99 @@
+---
+title: "Proyecto Dengue"
+author: "Pamela Pairo"
+date: "1/3/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library (raster)
+library (sp)
+
+r <- getData("worldclim",var="bio",res=10)
+?getData
+
+r <- r[[c(1,12)]]
+names(r) <- c("Temp","Prec")
+plot(r[[1]])
+
+nlayers(r)
+class(r)
+unlist(r)
+plot(r)
+
+lats <- c(9.093028 , 9.396111, 9.161417)
+lons <- c(-11.7235, -11.72975, -11.709417) 
+
+coords <- data.frame(x=lons,y=lats)
+
+points <- SpatialPoints(coords, proj4string = r@crs)
+
+values <- extract(r,points)
+
+df <- cbind.data.frame(coordinates(points),values)
+
+df
+
+plot(r[[2]])
+plot(points,add=T)
+```
+```{r cementerios}
+library (ows4R)
+library(httr)
+
+wfs_cementerios <-"http://wms.ign.gob.ar/geoserver/wfs"
+url <- parse_url(wfs_cementerios)
+url$query <- list(service = "wfs",
+                  version = "2.0.0",
+                  typename = "ign:puntos_de_equipamiento_AL030",
+                  request = "GetFeature",
+                  outputFormat = "application/json")
+request <- build_url(url)
+names (Cementerio)
+class(Cementerio)
+st_crs(Cementerio)
+
+Cementerio <- read_sf(request)%>%
+  separate(geometry, sep = ",", into = c("long", "lat"))%>%
+select(nombre = fna, long=long, lat=lat) 
+
+qtm (Cementerio)
+head (Cementerio)
+
+```
+
+
+```{r provincias}
+library (ggplot2)
+library (dplyr)
+wfs_provincias <-"http://wms.ign.gob.ar/geoserver/wfs"
+url <- parse_url(wfs_provincias)
+url$query <- list(service = "wfs",
+                  version = "2.0.0",
+                  typename = "ign:provincia",
+                  request = "GetFeature",
+                  outputFormat = "application/json")
+request_provincia <- build_url(url)
+provincias <- st_read(request_provincia)
+san_juan <- st_read(request_provincia)%>%filter (nam =="San Juan")
+qtm(provincia)
+names (provincia)
+
+prueba <-Cementerio %>%
+st_intersection(san_juan)
+
+qtm (prueba)
+
+ggplot() +
+geom_sf(data = prueba, colour = "#FDE725") + # yellow points
+geom_sf(data = san_juan, fill = NA, colour = "#440154") +
+theme(panel.background = element_rect(fill = "#66BDFF")) +
+coord_sf(crs = 4326)+
+labs(title = "Cementerios en San Juan")
+```
+
+
