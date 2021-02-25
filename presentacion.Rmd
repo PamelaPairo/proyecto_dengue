@@ -1,7 +1,6 @@
 ---
 title: "La problemática del dengue en Argentina"
 author: "Pamela E. Pairo"
-date: "2021/12/01 (updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
     css: ["rladies", "rladies-fonts"]
@@ -63,16 +62,13 @@ xaringanExtra::style_share_again(
 - En 2019-2020, se registraron al Sistema Nacional de Vigilancia de la Salud 56.293 casos de dengue (entre probables y confirmados por laboratorio o nexo epidemiológico) sin antecedente de viaje.
 
 ---
-
 #Situación a actual 
 
-cantidad de casos a nivel mundial y como aumento en los ultimos años
+Cada año se presentan cerca de 390 millones de casos de dengue en el mundo, de los cuales 500 mil corresponden a dengue grave con alrededor de 25 mil muertes. 
 
-y en argentina
+## En América ha pasado a ser un problema muy grave y prioritario para la **salud pública** desde 1980.
 
-`r emo::ji("heavy_check_mark")` 
-
-Es un problema de salud pública
+## Se ha registrado en Argentina 2 de los 4 serotipos (DEN1 Y DEN4)
 
 ---
 
@@ -82,30 +78,124 @@ Es un problema de salud pública
 
 ---
 
-# ¿ Qué favorece su expansión?
+# ¿ Qué favorece la proliferación del dengue?
 
-relación con el hombre
-radio de acción
-antropofilico
-huevos de resistencia
-containers y recipientes
-le gusta picar a muchas personas
-pone huevos en varios recipientes
+- Antropofilico
+
+--
+
+- Huevos de resistencia
+
+--
+
+- Radio de acción (50-100m)
+
+--
+
+- Estrategia reproductiva de ingestas múltiples
+--
+
+- Pone huevos en varios recipientes, aseguando que parte de su descendencia sobreviva y se reproduzca
+
+--
+
+- Containers y recipientes
+
+.center[<img src="images/containers.png" width="45%"/>]
 ---
-# Pregunta de investigación
+# Cambio del número de casos de dengue 
 
-Hip.
+.center[<img src="images/sudamerica.png" width="90%"/>]
 
-Proyección de los casos de dengue según los diferentes escenarios del cambio climático.
+.footnote[ Fuente: Organización Panamericana de la Salud (OPS)]
+---
+# Cambio en la prep. media anual
 
+.center[<img src="images/precip.png" width="90%"/>]
+
+.footnote[ Fuente: Worldclim]
+---
+
+#Cambio en la temperatura máx. anual
+
+.center[<img src="images/tmax.png" width="90%"/>]
+
+.footnote[ Fuente: Worldclim]
+---
+
+class: inverse, middle, center
+
+# Pregunta de investigación `r icon::fa("bell")`
+
+###Analizar los cambios espaciotemporales de la incidencia del dengue en Argentina (2015-2020) en relación con los factores ambientales y socioeconómicos que la determinan.
+
+--
+
+### Proyección de los casos de dengue según los diferentes escenarios del cambio climático.
+
+--
+
+- ¿ La influencia de los factores ambientales y socioeconómicos cambia en el período 2015-2020?
+
+- ¿ Hay regiones del país con mayor riesgo de aumento de casos de dengue?
 
 ---
+class: top
 
 ## Variables ambientales y factores socioeconómicos
 
+--
+
+.pull-left[ V. ambientales
+
+- Temperatura máx. (estacional?)
+- Temperatura mín. (estacional?)
+- Temperatura media (estacional?)
+- Pp. medias mensuales (estacional?)
+- Humedad relativa
+- NDVI
+
+]
+
+--
+
+.pull-right[ 
+V. socioeconomicas
+
+- Distancia a cementerios
+- Suministros de agua potable
+- Densidad poblacional
+- Ingresos mensuales
+- NBI
+
+]
+
 ---
 
-# Mapa de casos por provincia
+# Mapa Necesidades básicas insatisfechas (NBI)
+
+.center[<img src="images/nbi.jpg" width="90%"/>]
+
+---
+
+# Hasta el momento...
+
+--
+
+Pedido de los registros de casos de dengue al Ministerio de Salud de las diferentes localidades de la Argentina.
+
+--
+
+Revisión de los boletines epidemiológicos
+
+--
+
+Búsqueda y recolección de datos demográficos y socioeconómicos del INDEC (del censo del 2010 y de las proyecciones)
+
+--
+
+Posible contacto en la CONAE
+
 
 ---
 

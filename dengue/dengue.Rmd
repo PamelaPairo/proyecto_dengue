@@ -1,46 +1,136 @@
 ---
 title: "Proyecto Dengue"
 author: "Pamela Pairo"
-date: "1/3/2021"
+date: "1/12/2021"
 output: html_document
 ---
-
+ 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# Libraries
+library(sp)
+library(sf)
+library(raster)
+library(tmap)
+library(tmaptools)
+library (rasterVis)
+library (maps)
+library (viridis)
+library (rJava)
+library(tabulizer)  # Handy tool for PDF Scraping
+library(tidyverse)  # Core data manipulation and visualization libraries
+library (ows4R)
+library(httr)
 ```
 
-```{r}
-library (raster)
-library (sp)
+```{r datos de worldclim- precipitaciones}
+data("World")
 
-r <- getData("worldclim",var="bio",res=10)
+r <- getData("worldclim", var="prec",res=10)
 ?getData
 
-r <- r[[c(1,12)]]
-names(r) <- c("Temp","Prec")
-plot(r[[1]])
+# Create RasterStack objects
+prec.2015.files <- list.files("C:/Users/Pame/Documents/GitHub/proyecto_dengue/dengue/wc2.1_2.5m_prec_2010-2018/2015", ".tif", full.names=TRUE)
 
-nlayers(r)
-class(r)
-unlist(r)
-plot(r)
+prec.2016.files <- list.files("C:/Users/Pame/Documents/GitHub/proyecto_dengue/dengue/wc2.1_2.5m_prec_2010-2018/2016", ".tif", full.names=TRUE)
 
-lats <- c(9.093028 , 9.396111, 9.161417)
-lons <- c(-11.7235, -11.72975, -11.709417) 
+prec.2017.files <- list.files("C:/Users/Pame/Documents/GitHub/proyecto_dengue/dengue/wc2.1_2.5m_prec_2010-2018/2017", ".tif", full.names=TRUE)
 
-coords <- data.frame(x=lons,y=lats)
+prec.2018.files <- list.files("C:/Users/Pame/Documents/GitHub/proyecto_dengue/dengue/wc2.1_2.5m_prec_2010-2018/2018", ".tif", full.names=TRUE)
 
-points <- SpatialPoints(coords, proj4string = r@crs)
+prec.2015 <- stack(prec.2015.files)
+prec.2016 <- stack(prec.2016.files)
+prec.2017 <- stack(prec.2017.files)
+prec.2018 <- stack(prec.2018.files)
 
-values <- extract(r,points)
+mean.prec_2015<- mean(prec.2015)
+mean.prec_2016<- mean(prec.2016)
+mean.prec_2017<- mean(prec.2017)
+mean.prec_2018<- mean(prec.2018)
 
-df <- cbind.data.frame(coordinates(points),values)
+argentina <- getData('GADM', country="ARG", level=2)# level2= jurisdicciones
+plot(argentina)
 
-df
+# Crop data to Argentina
+M.area <- extent(argentina)
 
-plot(r[[2]])
-plot(points,add=T)
+tempcol <- colorRampPalette(c('#2F2C62', '#42399B', '#4A52A7', '#59AFEA', '#7BCEB8', '#A7DA64',
+            '#EFF121', '#F5952D', '#E93131', '#D70131', '#D70131'))
+
+
+plot(mean.prec_2015,xlim=c(-80, -50), ylim=c(-58, -20), col=tempcol(100), zlim=c(0,240), main='2015')
+map("world", add=TRUE, lwd=0.5, col = "black")
+
+plot(mean.prec_2018,xlim=c(-80, -50), ylim=c(-58, -20), col=tempcol(100), zlim=c(0,240), main='2018')
+map("world", add=TRUE, lwd=0.5, col = "black")
+
+###stach de las medias de precipitaciones anuales
+writeRaster(mean.prec_2017, filename = "mean.prec_2017.tif")
+
+prec <- list.files("C:/Users/Pame/Documents/GitHub/proyecto_dengue/dengue/prec", ".tif", full.names=TRUE)
+
+prec.prueba <-stack(prec)
+
+prec.crop <- crop(prec.prueba, argentina)
+
+
+plot (prec.prueba, xlim=c(-80, -50), ylim=c(-58, -20), col=tempcol(100), zlim=c(0,240))
+map("world", add=TRUE, lwd=0.5, col = "black")
+
+mapa_v1<-levelplot(prec.crop, col.regions=viridis)
+mapa_v1 + layer(sp.polygons(argentina))
+
 ```
+
+```{r tmax con datos de worldclim}
+
+tmax.2015.files <- list.files("C:/Users/Pame/Documents/GitHub/proyecto_dengue/dengue/temp_max/2015", ".tif", full.names=TRUE)
+
+tmax.2016.files <- list.files("C:/Users/Pame/Documents/GitHub/proyecto_dengue/dengue/temp_max/2016", ".tif", full.names=TRUE)
+
+tmax.2017.files <- list.files("C:/Users/Pame/Documents/GitHub/proyecto_dengue/dengue/temp_max/2017", ".tif", full.names=TRUE)
+
+tmax.2018.files <- list.files("C:/Users/Pame/Documents/GitHub/proyecto_dengue/dengue/temp_max/2018", ".tif", full.names=TRUE)
+
+tmax.2015 <- stack(tmax.2015.files)
+tmax.2016 <- stack(tmax.2016.files)
+tmax.2017 <- stack(tmax.2017.files)
+tmax.2018 <- stack(tmax.2018.files)
+
+mean.tmax_2015<- mean(tmax.2015)
+mean.tmax_2016<- mean(tmax.2016)
+mean.tmax_2017<- mean(tmax.2017)
+mean.tmax_2018<- mean(tmax.2018)
+
+writeRaster(mean.tmax_2015, filename = "mean.tmax_2015.tif")
+writeRaster(mean.tmax_2016, filename = "mean.tmax_2016.tif")
+writeRaster(mean.tmax_2017, filename = "mean.tmax_2017.tif")
+writeRaster(mean.tmax_2018, filename = "mean.tmax_2018.tif")
+
+tmax_mean <- list.files("C:/Users/Pame/Documents/GitHub/proyecto_dengue/dengue/temp_max_final", ".tif", full.names=TRUE)
+
+tmax_mean_stack <-stack(tmax_mean)
+
+tmax_argentina <- crop(tmax_mean_stack, argentina)
+
+mapa_tmax<-levelplot(tmax_argentina, col.regions=viridis)
+mapa_tmax + layer(sp.polygons(argentina))
+
+
+mapTheme <- rasterTheme(region=c( "#0000FF", "#BEDAFF","#008000", "#D4F9E2", "#008000","#FFFF00","#FFD27F", "#FFB732" ,"#FF6A6A",
+                                 "#D53E4F"))  
+my.at = c(-5,20,24, 25,26,27,28, 29,30,35)
+my.brks=seq(-5, 35, by=5)
+
+myColorkey <- list(at=my.brks, labels=list(at=my.brks, labels=my.at), space="bottom")
+
+p=levelplot(tmax_argentina, par.settings=mapTheme,at = my.at, colorkey=myColorkey,margin=F) + layer(sp.polygons(argentina))
+
+print(p)
+
+```
+
+
 ```{r cementerios}
 library (ows4R)
 library(httr)
@@ -66,7 +156,6 @@ head (Cementerio)
 
 ```
 
-
 ```{r provincias}
 library (ggplot2)
 library (dplyr)
@@ -79,9 +168,9 @@ url$query <- list(service = "wfs",
                   outputFormat = "application/json")
 request_provincia <- build_url(url)
 provincias <- st_read(request_provincia)
-san_juan <- st_read(request_provincia)%>%filter (nam =="San Juan")
-qtm(provincia)
-names (provincia)
+san_juan <- st_read(request_provincia)%>%filter (nam =="Ciudad Autónoma de Buenos Aires")
+
+names (provincias)
 
 prueba <-Cementerio %>%
 st_intersection(san_juan)
@@ -96,4 +185,155 @@ coord_sf(crs = 4326)+
 labs(title = "Cementerios en San Juan")
 ```
 
+```{r SE 31 a 43 de 2020}
+# PDF Scrape Tables
+endangered_species_scrape <- extract_tables(
+    file   = "biv_520_se_44.pdf", 
+    method = "decide", 
+    output = "data.frame")
+
+# Pluck the first table in the list
+endangered_species_raw_tbl <- endangered_species_scrape %>% 
+    pluck(3) %>% 
+    as_tibble()
+
+# Show first 6 rows
+endangered_species_raw_tbl %>% head() %>% knitr::kable()
+
+```
+
+```{r SE 1 a 33 de 2019}
+# PDF Scrape Tables
+dengue_2019_SE1_33 <- extract_tables(
+    file   = "boletin-integrado-vigilancia-n463.pdf", 
+    method = "decide", 
+    output = "data.frame")
+
+# Pluck the first table in the list
+dengue_final_2019_SE1_33 <- dengue_2019_SE1_33 %>% 
+    pluck(4) %>% 
+    as_tibble()
+
+# Show first 6 rows
+dengue_final_2019_SE1_33 %>% head() %>% knitr::kable()
+
+dengue_final_2019_SE1_33 %>%
+  select("X","X.1") %>% 
+  
+
+```
+
+```{r SE 1 a 51 de 2019}
+dengue_2019 <- extract_tables(
+    file   = "boletin-integrado-vigilancia-n479.pdf", 
+    method = "decide", 
+    output = "data.frame")
+
+#NO PUDE EXTRAER LA INFORMACIÓN
+
+# Pluck the first table in the list
+dengue_final_2019 <- dengue_2019 %>% 
+    pluck(2) %>% 
+    as_tibble()
+
+# Show first 6 rows
+dengue_final_2019 %>% head() %>% knitr::kable()
+
+class(dengue_final_2019)
+
+dengue_final_2019 %>% 
+  select (Casos..S.E.Provincia.FNO.notificados.D.de, Flavivirus.Dengue.Zika)
+```
+
+```{r}
+library(readr)
+dengue2016 <-read_tsv("database2016.txt")
+
+dengue2016 %>% 
+  select()
+```
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tmap)
+library(sf)
+library (raster)
+library (classInt)
+
+sudamerica <-read.csv("sudamerica_dengue.csv")
+
+data("World")
+countries <- World %>%
+  filter(continent%in%"South America") 
+
+crs(countries)
+
+prueba <- merge(countries,sudamerica)
+
+#haciendo los cuantiles del intervalo
+
+tm_shape(prueba, projection=4326) + 
+  tm_polygons(col = "anio_2015", title="Casos confirmados", style="jenks")+tm_compass(type = "arrow", position = c("right", "top")) + tm_scale_bar()+
+  tm_style("col_blind")+
+  tm_layout(legend.outside = TRUE, legend.outside.position = "right")
+
+```
+
+```{r mapa de sudamerica con la cantidad de casos de dengue desde 2015-2020}
+
+cuts <- c(0, 6000, 15000, 60000, 1000000 , 2250000)
+
+mapa20 <-tm_shape(prueba, projection = 4326) +
+  tm_polygons(col="anio_2015",
+    breaks = cuts) + 
+  tm_style("col_blind")+
+  tm_compass(type = "arrow", position = c("left", "top")) +
+  tm_layout(legend.show = FALSE, frame = FALSE, title = "2015", title.position = c("right","top"), title.size = 1)
+  
+
+mapa30 <-tm_shape(prueba, projection = 4326) +
+  tm_polygons(col="anio_2016",
+    breaks = cuts) +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = FALSE,frame = FALSE, title = "2016", title.position = c("right","top"), title.size = 1)
+
+mapa40 <-tm_shape(prueba, projection = 4326) +
+  tm_polygons(col="anio_2017",
+    breaks = cuts, labels= c("0-6", "6-15", "15-60", "60-1millon", ">1 millon"), title="Nro. casos (x1000)") +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.outside = TRUE, legend.outside.position = "right", frame = FALSE, title = "2017", title.position = c("right","top"), legend.outside.size = 0.4, title.size = 1)
+
+mapa40
+
+mapa50 <-tm_shape(prueba, projection = 4326) +
+  tm_polygons(col="anio_2018",
+    breaks = cuts) +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = FALSE, frame = FALSE, title = "2018", title.position = c("right","top"), title.size =1)
+
+mapa60 <-tm_shape(prueba, projection = 4326) +
+  tm_polygons(col="anio_2019",
+    breaks = cuts) +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = FALSE, frame = FALSE, title = "2019", title.position = c("right","top"), title.size = 1)
+
+mapa70 <-tm_shape(prueba, projection = 4326) +
+  tm_polygons(col="anio_2020",
+    breaks = cuts) +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = FALSE, frame = FALSE, title = "2020", title.position = c("right","top"), title.size = 1)+
+    tm_scale_bar(breaks = c (0, 1000, 2000), text.size = 1.2)
+
+final_sudamerica <- tmap_arrange(mapa20,mapa30, mapa40, mapa50,mapa60,mapa70,ncol=3, nrow = 2)
+
+tmap_save(final_sudamerica, "sudamerica.png", width=1920, height=1080)
+
+```
 

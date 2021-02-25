@@ -1,0 +1,249 @@
+---
+title: "Casos de dengue"
+author: "Pamela Pairo"
+date: "2/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(pdftools)
+library(tidyverse)
+
+pdf1 <- pdf_text ("IF-2021-05150554-APN-DNEEIE#MS.pdf")
+
+pdf1
+
+write (pdf1, "2016.csv")
+
+base_2016 <- read_csv ("2016.csv")
+
+nueva_base <- base_2016 %>% 
+  separate(`PROVINCIA  DEPARTAMENTO    CASOS`, into = c("Provincia", "Departamento", "Casos", "V1", "V2"))
+
+buenos<- nueva_base %>% 
+  select(Provincia) %>% 
+  filter (Provincia %in% c("BUENOS", "SGO", "CAPITAL") )
+
+
+
+base2 <- anti_join(nueva_base, buenos) %>% 
+  mutate(Provincia = case_when(
+    str_detect(Provincia, regex("AIRES", ignore_case = TRUE)) ~ "Buenos Aires",
+    str_detect(Provincia, "FEDERAL") ~ "Capital Federal",
+    str_detect(Provincia, "ENTRE") ~ "Entre Rios",
+    str_detect(Provincia, "SANTA") ~ "Santa Fe",
+    str_detect(Provincia, "ESTERO") ~ "Santiago del Estero",
+    TRUE ~ as.character(Provincia)
+  )) 
+
+write_csv (base2, "2016_nuevo.csv")
+
+```
+
+
+```{r}
+library(rgeoboundaries)
+argentina_boundary <- geoboundaries("Argentina", "adm2")
+
+argentina_boundary$shapeID
+
+
+ggplot(data = argentina_boundary) +
+  geom_sf()
+
+```
+
+
+```{r}
+pdf2 <- pdf_text ("IF-2021-05151024-APN-DNEEIE#MS.pdf")
+
+write (pdf2, "2017.csv")
+
+base_2017 <- read_csv ("2017.csv",locale = locale(encoding = "ISO-8859-1"))
+
+nueva_base_2017 <- base_2017 %>% 
+  separate(`PROVINCIA DEPARTAMENTO CASOS`, into = c("Provincia", "Departamento", "Casos", "V1", "V2"))
+
+buenos_2017<- nueva_base_2017 %>% 
+  select(Provincia) %>% 
+  filter (Provincia %in% c("BUENOS", "CAPITAL") )
+
+
+
+base2_2017 <- anti_join(nueva_base_2017, buenos_2017) %>% 
+  mutate(Provincia = case_when(
+    str_detect(Provincia, regex("AIRES", ignore_case = TRUE)) ~ "Buenos Aires",
+    str_detect(Provincia, "FEDERAL") ~ "Capital Federal",
+    str_detect(Provincia, "ENTRE") ~ "Entre Ríos",
+    str_detect(Provincia, "SANTA") ~ "Santa Fé",
+    TRUE ~ as.character(Provincia)
+  )) 
+
+write_excel_csv (base2_2017, "2017_nuevo.csv")
+```
+
+```{r}
+
+pdf3 <- pdf_text ("IF-2021-05151396-APN-DNEEIE#MS.pdf")
+
+write (pdf3, "2018.csv")
+
+base_2018 <- read_csv ("2018.csv",locale = locale(encoding = "ISO-8859-1"))
+
+nueva_base_2018 <- base_2018 %>% 
+  separate(`PROVINCIA   DEPARTAMENTO     CASOS`, into = c("Provincia", "Departamento", "Casos", "v1", "v2"), sep= "[[:space:]]+")
+
+base2_2018 <- nueva_base_2018 %>% 
+  mutate(Provincia = case_when(
+    str_detect(Provincia, regex("Buenos", ignore_case = TRUE)) ~ "Buenos Aires",
+    str_detect(Provincia, "CABA") ~ "Capital Federal",
+    str_detect(Provincia, "Entre") ~ "Entre Ríos",
+    str_detect(Provincia, "Santa") ~ "Santa Fé",
+    str_detect(Provincia, "Santiago") ~ "Santiago del Estero",
+    TRUE ~ as.character(Provincia)
+  )) 
+
+write_excel_csv (base2_2018, "2018_nuevo.csv")
+
+base2_2018<- gsub("(?<=\\b.)(.*?)\\b", "\\L\\1", base2_2018, perl=TRUE)
+
+base2_2018 <- as.data.frame.table(base2_2018)
+
+```
+
+```{r}
+
+pdf4 <- pdf_text ("IF-2021-05151812-APN-DNEEIE#MS.pdf")
+
+write (pdf4, "2019.csv")
+
+base_2019 <- read_csv ("2019.csv", locale = locale(encoding = "ISO-8859-1"))
+
+nueva_base_2019 <- base_2019 %>% 
+  separate(`PROVINCIA DEPARTAMENTO CASOS`, into = c("Provincia", "Departamento", "Casos", "v1", "v2"),sep= "[[:space:]]+")
+
+buenos_2019<- nueva_base_2019 %>% 
+  select(Provincia) %>% 
+  filter (Provincia %in% c("Buenos") )
+
+base2_2019 <- anti_join(nueva_base_2019, buenos_2019) %>% 
+  mutate(Provincia = case_when(
+    str_detect(Provincia, regex("Aires", ignore_case = TRUE)) ~ "Buenos Aires",
+    str_detect(Provincia, "CABA") ~ "Capital Federal",
+    str_detect(Provincia, "Santa") ~ "Santa Fé",
+    TRUE ~ as.character(Provincia)
+  )) 
+
+write_csv (base2_2019, "2019_nuevo.csv")
+
+```
+
+```{r}
+
+pdf5 <- pdf_text ("IF-2021-05152084-APN-DNEEIE#MS.pdf")
+
+write (pdf5, "2020.csv")
+
+base_2020 <- read_csv ("2020.csv", locale = locale(encoding = "ISO-8859-1"))
+
+nueva_base_2020 <- base_2020 %>% 
+  separate(`PROVINCIA DEPARTAMENTO    CASOS`, into = c("Provincia", "Departamento", "Casos", "v1", "v2"),sep= "[[:space:]]+")
+
+buenos_2020<- nueva_base_2020 %>% 
+  select(Provincia) %>% 
+  filter (Provincia %in% c("Buenos", "Santiago") )
+
+base2_2020 <- anti_join(nueva_base_2020, buenos_2020) %>% 
+  mutate(Provincia = case_when(
+    str_detect(Provincia, regex("Aires", ignore_case = TRUE)) ~ "Buenos Aires",
+    str_detect(Provincia, "CABA") ~ "Capital Federal",
+    str_detect(Provincia, "Entre") ~ "Entre Ríos",
+    str_detect(Provincia, "Santa") ~ "Santa Fé",
+    str_detect(Provincia, "del") ~ "Santiago del Estero",
+    TRUE ~ as.character(Provincia)
+  )) 
+
+base3_2020 <- base2_2020 %>%  
+  mutate(Departamento = case_when(
+    str_detect(Departamento, regex("Pampa", ignore_case = TRUE)) ~ "La Pampa",
+    str_detect(Departamento, "Rioja") ~ "La Rioja",
+    str_detect(Departamento, "Juan") ~ "San Juan",
+    str_detect(Departamento, "Luis") ~ "San Luis",
+    TRUE ~ as.character(Departamento)
+  ))
+
+write_excel_csv (base3_2020, "2020_nuevo.csv")
+```
+
+Intentando la unión entre las tablas
+
+```{r}
+
+casos_2020 <- read_csv ("2020_final.csv")
+casos_2019 <- read_csv ("2019_final.csv",locale = locale(encoding = "ISO-8859-1"))
+casos_2018 <- read_csv ("2018_final.csv")
+casos_2017 <- read_csv ("2017_final.csv")
+casos_2016 <- read_csv ("2016_final.csv", locale = locale(encoding = "ISO-8859-1"))
+
+Prueba<-casos_2020 %>% 
+  full_join(casos_2019) %>% 
+  full_join(casos_2018) %>% 
+  full_join(casos_2017) %>% 
+  full_join(casos_2016)
+
+Prueba %>%
+  filter (Provincia== "Chaco") %>% 
+  arrange (desc(Departamento)) 
+
+Prueba <- Prueba %>% mutate(Departamento = case_when(
+    str_detect(Departamento, regex("Zarate", ignore_case = TRUE)) ~ "Zárate",
+    str_detect(Departamento, regex("Vicente Lop[e|é]z", ignore_case = TRUE)) ~ "Vicente López",
+    str_detect(Departamento, regex("San Nicol[a|á]s", ignore_case = TRUE)) ~ "San Nicolás",
+    str_detect(Departamento, regex("San Fernando", ignore_case = TRUE)) ~ "San Fernando",
+    str_detect(Departamento, regex("Presidente Per[o|ó]n", ignore_case = TRUE)) ~ "Presidente Perón",
+    str_detect(Departamento, regex("^Pil", ignore_case = TRUE)) ~ "Pilar",
+    str_detect(Departamento, regex("Pehuaj[o|ó]", ignore_case = TRUE)) ~ "Pehuajó",
+    str_detect(Departamento, regex("Necochea", ignore_case = TRUE)) ~ "Necochea",
+    str_detect(Departamento, regex("Mor[o|ó]n", ignore_case = TRUE)) ~ "Morón",
+    str_detect(Departamento, regex("Moreno", ignore_case = TRUE)) ~ "Moreno",
+    str_detect(Departamento, regex("Merlo", ignore_case = TRUE)) ~ "Merlo",
+    str_detect(Departamento, regex("Mercedes", ignore_case = TRUE)) ~ "Mercedes",
+    str_detect(Departamento, regex("Marcos Paz", ignore_case = TRUE)) ~ "Marcos Paz",
+    str_detect(Departamento, regex("Malvinas Argentinas", ignore_case = TRUE)) ~ "Malvinas Argentinas",
+     str_detect(Departamento, regex("Luj[a|á]n", ignore_case = TRUE)) ~ "Luján",
+    str_detect(Departamento, regex("^Lomas", ignore_case = TRUE)) ~ "Lomas de Zamora",
+     str_detect(Departamento, regex("Lan[ú|u]s", ignore_case = TRUE)) ~ "Lanús",
+    str_detect(Departamento, regex("Jun[i|í]n", ignore_case = TRUE)) ~ "Junín",
+    str_detect(Departamento, regex("^Jos", ignore_case = TRUE)) ~ "Jose C. Paz",
+    str_detect(Departamento, regex("Ituzaing[o|ó]", ignore_case = TRUE)) ~ "Ituzaingó",
+   str_detect(Departamento, regex("General San Mart[i|í]n", ignore_case = TRUE)) ~ "General San Martín",
+    str_detect(Departamento, regex("General Rodr[i|í]guez", ignore_case = TRUE)) ~ "General Rodríguez",
+    str_detect(Departamento, regex("General Pueyrred[o|ó]n", ignore_case = TRUE)) ~ "General Pueyrredón",
+    str_detect(Departamento, regex("Exaltaci[o|ó]n de la Cruz", ignore_case = TRUE)) ~ "Exaltación de la Cruz",
+    str_detect(Departamento, regex("Esteban Echeverr[i|í]a", ignore_case = TRUE)) ~ "Esteban Echeverría",
+    str_detect(Departamento, regex("Almirante Brown", ignore_case = TRUE)) ~ "Almirante Brown",
+         TRUE ~ as.character(Departamento)
+  ))
+
+write_excel_csv (Prueba, "Matriz_completa.csv")
+
+Prueba<-Prueba  %>% replace(is.na(.), 0)# remplazo los NA por 0 (ceros).
+
+```
+
+```{r}
+Prueba <- read_csv ("Matriz_completa.csv")# a esta matriz la puli y es diferente a la anterior.
+
+Prueba %>% group_by(Provincia, Departamento) %>% 
+  mutate(suma= sum(Casos_2020))
+
+Prueba %>% 
+  filter (Provincia=="Santa Fé") %>% 
+  arrange(desc(Departamento))
+
+```
+
