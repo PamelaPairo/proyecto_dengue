@@ -218,7 +218,7 @@ Prueba <- Prueba %>% mutate(Departamento = case_when(
     str_detect(Departamento, regex("^Lomas", ignore_case = TRUE)) ~ "Lomas de Zamora",
      str_detect(Departamento, regex("Lan[ú|u]s", ignore_case = TRUE)) ~ "Lanús",
     str_detect(Departamento, regex("Jun[i|í]n", ignore_case = TRUE)) ~ "Junín",
-    str_detect(Departamento, regex("^Jos", ignore_case = TRUE)) ~ "Jose C. Paz",
+    str_detect(Departamento, regex("^Jos", ignore_case = TRUE)) ~ "José C. Paz",
     str_detect(Departamento, regex("Ituzaing[o|ó]", ignore_case = TRUE)) ~ "Ituzaingó",
    str_detect(Departamento, regex("General San Mart[i|í]n", ignore_case = TRUE)) ~ "General San Martín",
     str_detect(Departamento, regex("General Rodr[i|í]guez", ignore_case = TRUE)) ~ "General Rodríguez",
@@ -311,7 +311,7 @@ cordoba <- cordoba %>%
   select ("Departamento",`2016`: `2020`) %>% 
   slice (1:30) %>% 
   na.omit() %>% 
-  mutate (Provincia= "Cordoba") %>% 
+  mutate (Provincia= "Córdoba") %>% 
   relocate (Provincia, .before = Departamento) %>% 
   slice (-1)
 
@@ -427,7 +427,7 @@ san_luis <- san_luis %>%
 
 santa_fe <- read_excel ("./poblacion_estimada/proy_1025_depto_santa_fe.xls")
 
-santa<-fe <- santa_fe %>% 
+santa_fe <- santa_fe %>% 
   select ("Departamento",`2016`: `2020`) %>% 
   slice (1:23) %>% 
   na.omit() %>% 
@@ -461,7 +461,18 @@ Uniendo todos los data frames de la estimación poblacional (2016-2020) de los d
 
 ```{r}
 
-bind_rows(list(buenos_aires, caba, catamarca, chaco, cordoba, corrientes, entre_rios, formosa, jujuy, la_pampa, la_rioja, mendoza, misiones, salta, san_juan, san_luis, santa_fe, santiago_del_estero))
+poblacion_total <-bind_rows(list(buenos_aires, caba, catamarca, chaco, cordoba, corrientes, entre_rios, formosa, jujuy, la_pampa, la_rioja, mendoza, misiones, salta, san_juan, san_luis, santa_fe, santiago_del_estero, tucuman)) 
+
+poblacion_total <-poblacion_total %>% 
+  unite(Provincia_Departamento, c("Provincia", "Departamento"))
+
+casos_dengue <- read_csv("Matriz_completa.csv")
+
+casos_dengue <-casos_dengue %>% 
+  unite(Provincia_Departamento, c("Provincia", "Departamento"))
+
+left_join(casos_dengue, poblacion_total, by="Provincia_Departamento")
+
 ```
 
 
