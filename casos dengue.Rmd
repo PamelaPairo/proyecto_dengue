@@ -471,7 +471,15 @@ casos_dengue <- read_csv("Matriz_completa.csv")
 casos_dengue <-casos_dengue %>% 
   unite(Provincia_Departamento, c("Provincia", "Departamento"))
 
-left_join(casos_dengue, poblacion_total, by="Provincia_Departamento")
+population_dengueCases <- left_join(casos_dengue, poblacion_total, by="Provincia_Departamento") %>% 
+  separate(Provincia_Departamento, c("Provincia", "Departamento"), sep= "_") %>% 
+  rename ("Population_2016" = "2016",
+          "Population_2017" = "2017",
+          "Population_2018" = "2018",
+          "Population_2019" = "2019",
+          "Population_2020" = "2020")
+
+write_excel_csv(population_dengueCases, "population_dengueCases.csv")
 
 ```
 
