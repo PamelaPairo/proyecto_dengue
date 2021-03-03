@@ -464,7 +464,7 @@ Uniendo todos los data frames de la estimación poblacional (2016-2020) de los d
 poblacion_total <-bind_rows(list(buenos_aires, caba, catamarca, chaco, cordoba, corrientes, entre_rios, formosa, jujuy, la_pampa, la_rioja, mendoza, misiones, salta, san_juan, san_luis, santa_fe, santiago_del_estero, tucuman)) 
 
 poblacion_total <-poblacion_total %>% 
-  unite(Provincia_Departamento, c("Provincia", "Departamento"))
+  unite(Provincia_Departamento, c("Provincia", "Departamento"))# en realidad podria haber hecho un join con dos condiciones (provincia y departamento) en lugar de hacer unite y luego separate
 
 casos_dengue <- read_csv("Matriz_completa.csv")
 
@@ -481,6 +481,187 @@ population_dengueCases <- left_join(casos_dengue, poblacion_total, by="Provincia
 
 write_excel_csv(population_dengueCases, "population_dengueCases.csv")
 
+```
+
+Cargando la información espacial de los departamentos con casos de dengue de CABA y AMBA.
+
+```{r}
+library (ows4R)
+library(httr)
+library (tmap)
+
+wfs_departamentos <-"https://geoservicios.indec.gob.ar/geoserver/wfs?"
+url <- parse_url(wfs_departamentos)
+url$query <- list(service = "wfs",
+                  version = "2.0.0",
+                  typename = "geocenso2010:departamentos_codigo",
+                  request = "GetFeature",
+                  outputFormat = "application/json")
+request <- build_url(url)
+provincias <- st_read(request)
+
+qtm (provincias)
+
+casos_dengue <- read_csv("population_dengueCases.csv")# esta matriz la puli para poder hacer el join. Por ejemplo puse en minuscula "comuna".
+
+prueba <-left_join(provincias, casos_dengue, by= c("departamento", "provincia"))%>% 
+  arrange (desc(provincia)) 
+
+colnames (prueba)
+
+# recortando caba y amba
+
+amba <- c ("Almirante Brown", "Avellaneda", "Berazategui", "Esteban Echeverría", "Ezeiza", "Florencio Varela", "General San Martín", "Hurlingham", "Ituzaingó", "José C. Paz", "La Matanza", "Lanús", "Lomas de Zamora", "Malvinas Argentinas", "Merlo", "Moreno", "Morón", "Quilmes", "San Fernando", "San Isidro", "San Miguel", "Tigre", "Tres de Febrero","Vicente López")
+
+amba_recorte <- prueba %>% 
+  filter (departamento %in% amba) %>% 
+  slice (10:33)
+
+caba <- prueba %>% 
+  filter (provincia == "Ciudad Autónoma de Buenos Aires")
+
+caba_amba <- bind_rows(list (amba_recorte, caba))
+
+caba_amba_2020 <- tm_shape(caba_amba, projection = 4326) +
+  tm_polygons(col="Casos_2020",
+              style = "fixed",
+              breaks= c(0, 100, 200, 500, 2000, 3800),
+              palette = "BuGn", 
+              title= "Dengue Cases") +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = TRUE, frame = FALSE, main.title = "2020", title.position = c("right","top"), main.title.size = 0.5, legend.outside = TRUE, legend.position = c("left","center"), legend.outside.size= 0.3)+ tm_scale_bar(position= c("left", "bottom"), breaks=c(0, 10, 20), bg.color = "white")
+
+
+caba_amba_2019 <- tm_shape(caba_amba, projection = 4326) +
+  tm_polygons(col="Casos_2019",
+              style = "fixed",
+              breaks= c(0, 2, 6, 8, 10, 35),
+              palette = "BuGn",
+              title= "Dengue Cases") +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = TRUE, frame = FALSE, main.title = "2019", title.position = c("left","top"), main.title.size = 0.5, legend.outside = TRUE, legend.outside.size= 0.3)
+
+caba_amba_2018 <- tm_shape(caba_amba, projection = 4326) +
+  tm_polygons(col="Casos_2018",
+              style = "fixed",
+              breaks= c (0, 5, 10,20, 40,80),
+              palette = "BuGn",
+              title= "Dengue Cases") +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = TRUE, frame = FALSE, main.title = "2018", title.position = c("left","top"), main.title.size = 0.5, legend.outside = TRUE, legend.outside.size= 0.3)+ tm_compass(type = "arrow", position = c("right", "top"))
+
+caba_amba_2017 <- tm_shape(caba_amba, projection = 4326) +
+  tm_polygons(col="Casos_2017",
+              style = "fixed",
+              breaks= c(0, 5, 10, 20, 40, 85),
+              palette = "BuGn",
+              title= "Dengue Cases") +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = TRUE, frame = FALSE, main.title = "2017", title.position = c("left","top"), main.title.size = 0.5, legend.outside = TRUE, legend.outside.size= 0.3)
+
+caba_amba_2016 <- tm_shape(caba_amba, projection = 4326) +
+  tm_polygons(col="Casos_2016",
+              style = "kmeans",
+              palette = "BuGn",
+              title= "Dengue Cases") +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = TRUE, frame = FALSE, title.position = c("left","top"), main.title.size = 0.5, main.title = "2016", legend.outside = TRUE, legend.outside.size= 0.3)
+
+
+caba_amba_final <- tmap_arrange(caba_amba_2016,caba_amba_2017,caba_amba_2018, caba_amba_2019, caba_amba_2020ncol=3, nrow = 2)
+
+tmap_save(caba_amba_final, "caba_amba.png", width=1920, height=1080)
+
+```
+
+Intento de mapa de referencia de GBA
+
+```{r}
+library (grid)
+
+argentina_sin_tf_1 <- argentina_dengue %>% 
+  filter (!str_detect (provincia, "Tierra del Fuego, Antártida e Islas del Atlántico Sur")) 
+
+argentina <- tm_shape(argentina_sin_tf_1, projection = 4326) +
+  tm_polygons() +
+  tm_layout(legend.show = TRUE, frame = FALSE, title.position = c("left","top"), main.title.size = 0.5, main.title = " ")
+
+
+gba <-tm_shape(caba_amba, projection = 4326) +
+  tm_polygons() +
+  tm_layout(frame = FALSE, title.position = c("left","top"), main.title.size = 0.5, main.title = " Gran Buenos Aires")
+
+referencia <- gba 
+print(argentina, vp = viewport(0.2, 0.27, width = 0.3, height = 0.3))
+```
+
+```{r}
+
+casos_dengue_2 <- read_csv("population_dengueCases_sin_caba_amba.csv")# esta matriz la puli para poder hacer el join. Por ejemplo puse en minuscula "comuna". A caba y amba les puse 0 para hacer el mapa
+
+argentina_dengue <-left_join(provincias, casos_dengue_2, by= c("departamento", "provincia"))%>% 
+  arrange (desc(provincia)) 
+
+
+argentina_sin_tf <- argentina_dengue %>% 
+  filter(!str_detect(provincia, "Tierra del Fuego, Antártida e Islas del Atlántico Sur")) %>% 
+ mutate_at(vars(Casos_2016, Casos_2017, Casos_2018, Casos_2019, Casos_2020), ~replace_na(., 0)) %>% 
+  filter (provincia != "Santa Cruz", provincia != "Chubut")
+   
+
+argentina_sin_tf_2020 <- tm_shape(argentina_sin_tf, projection = 4326) +
+  tm_polygons(col="Casos_2020",
+              style = "kmeans",
+              palette = "Reds",
+              title= " ") +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = TRUE, frame = FALSE, main.title = "2020", title.position = c("left","top"), main.title.size = 0.5, legend.outside = TRUE, legend.outside.size= 0.3)+ tm_scale_bar(position= c("right", "bottom"), bg.color = "white")
+
+argentina_sin_tf_2019 <- tm_shape(argentina_sin_tf, projection = 4326) +
+  tm_polygons(col="Casos_2019",
+              style = "jenks",
+              palette = "Reds",
+              title= " ") +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = TRUE, frame = FALSE, main.title = "2019", title.position = c("left","top"), main.title.size = 0.5, legend.outside = TRUE, legend.outside.size= 0.3)
+
+argentina_sin_tf_2018 <- tm_shape(argentina_sin_tf, projection = 4326) +
+  tm_polygons(col="Casos_2018",
+              style = "jenks",
+              palette = "Reds",
+              title= " ") +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = TRUE, frame = FALSE, main.title = "2018", title.position = c("left","top"), main.title.size = 0.5, legend.outside = TRUE, legend.outside.size= 0.3)
+
+argentina_sin_tf_2017 <- tm_shape(argentina_sin_tf, projection = 4326) +
+  tm_polygons(col="Casos_2017",
+              style = "jenks",
+              palette = "Reds",
+              title= " ") +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = TRUE, frame = FALSE, main.title = "2017", title.position = c("left","top"), main.title.size = 0.5, legend.outside = TRUE, legend.outside.size= 0.3)
+
+argentina_sin_tf_2016 <- tm_shape(argentina_sin_tf, projection = 4326) +
+  tm_polygons(col="Casos_2016",
+              style = "kmeans",
+              palette = "Reds",
+              title= "") +
+  tm_style("col_blind")+
+  tm_legend(legend.position = c("left", "bottom"))+
+  tm_layout(legend.show = TRUE, frame = FALSE, main.title = "2016", title.position = c("left","top"), main.title.size = 0.5, legend.outside = TRUE, legend.outside.size= 0.3)
+
+resto_pais_final <- tmap_arrange(argentina_sin_tf_2016,argentina_sin_tf_2017, argentina_sin_tf_2018, argentina_sin_tf_2019, argentina_sin_tf_2020, ncol=3, nrow = 2)
+
+tmap_save(resto_pais_final, "resto_pais.png", width=1920, height=1080)
 ```
 
 
