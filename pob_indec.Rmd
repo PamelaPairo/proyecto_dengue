@@ -1,0 +1,248 @@
+---
+title: "Pob_indec"
+author: "Pamela Pairo"
+date: "3/24/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library (readxl)
+```
+
+Datos de la población estimada en los diferentes departamentos de la Argentina. Datos provistos por el INDEC.
+
+```{r}
+
+buenosAires <- read_excel ("./poblacion_estimada/proy_1025_depto_buenos_aires.xls")
+
+buenos_aires <- buenosAires %>% 
+  select ("Partido",`2016`: `2020`) %>% 
+  slice (1:141) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Buenos Aires") %>% 
+  relocate (Provincia, .before = Partido) %>% 
+  slice (-1) %>% 
+  rename (Departamento = Partido) 
+
+caba <- read_excel ("./poblacion_estimada/proy_1025_depto_caba.xls")
+
+caba <- caba %>% 
+  select ("Comuna",`2016`: `2020`) %>% 
+  slice (1:19) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Capital Federal") %>% 
+  relocate (Provincia, .before = Comuna) %>% 
+  slice (-1) %>% 
+  mutate (Comuna= str_replace_all(Comuna, c("^1$" = "COMUNA 1",
+                                            "2" = "COMUNA 2",
+                                            "3" = "COMUNA 3",
+                                            "4" = "COMUNA 4",
+                                            "5" = "COMUNA 5",
+                                            "6" = "COMUNA 6",
+                                            "7" = "COMUNA 7",
+                                            "8" = "COMUNA 8",
+                                            "9" = "COMUNA 9",
+                                            "10" = "COMUNA 10",
+                                            "11" = "COMUNA 11"
+                                            ))) %>% 
+  rename (Departamento = Comuna) 
+
+catamarca <- read_excel ("./poblacion_estimada/proy_1025_depto_catamarca.xls")
+
+catamarca <- catamarca %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:20) %>% 
+  na.omit(catamarca) %>% 
+  mutate (Provincia= "Catamarca") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+chaco <- read_excel ("./poblacion_estimada/proy_1025_depto_chaco.xls")
+
+chaco <- chaco %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:29) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Chaco") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+cordoba <- read_excel ("./poblacion_estimada/proy_1025_depto_cordoba.xls")
+
+cordoba <- cordoba %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:30) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Córdoba") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+corrientes <- read_excel ("./poblacion_estimada/proy_1025_depto_corrientes.xls")
+
+corrientes <- corrientes %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:29) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Corrientes") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+entre_rios <- read_excel ("./poblacion_estimada/proy_1025_depto_entre_rios.xls")
+
+entre_rios <- entre_rios %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:21) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Entre Ríos") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+formosa <- read_excel ("./poblacion_estimada/proy_1025_depto_formosa.xls")
+
+formosa <- formosa %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:13) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Formosa") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+jujuy <- read_excel ("./poblacion_estimada/proy_1025_depto_jujuy.xls")
+
+jujuy <- jujuy %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:20) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Jujuy") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+la_pampa <- read_excel ("./poblacion_estimada/proy_1025_depto_la_pampa.xls")
+
+la_pampa <- la_pampa %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:26) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "La Pampa") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+la_rioja <- read_excel ("./poblacion_estimada/proy_1025_depto_la_rioja.xls")
+
+la_rioja <- la_rioja %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:22) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "La Rioja") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+mendoza <- read_excel ("./poblacion_estimada/proy_1025_depto_mendoza.xls")
+
+mendoza <- mendoza %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:22) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Mendoza") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+misiones <- read_excel ("./poblacion_estimada/proy_1025_depto_misiones.xls")
+
+misiones <- misiones %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:21) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Misiones") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+salta <- read_excel ("./poblacion_estimada/proy_1025_depto_salta.xls")
+
+salta <- salta %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:27) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Salta") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+san_juan <- read_excel ("./poblacion_estimada/proy_1025_depto_san_juan.xls")
+
+san_juan <- san_juan %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:23) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "San Juan") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+san_luis <- read_excel ("./poblacion_estimada/proy_1025_depto_san_luis.xls")
+
+san_luis <- san_luis %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:14) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "San Luis") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+santa_fe <- read_excel ("./poblacion_estimada/proy_1025_depto_santa_fe.xls")
+
+santa_fe <- santa_fe %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:23) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Santa Fé") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+santiago_del_estero <- read_excel ("./poblacion_estimada/proy_1025_depto_santiago_del_estero.xls")
+
+santiago_del_estero <- santiago_del_estero %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:32) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Santiago del Estero") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+tucuman <- read_excel ("./poblacion_estimada/proy_1025_depto_tucuman.xls")
+
+tucuman <- tucuman %>% 
+  select ("Departamento",`2016`: `2020`) %>% 
+  slice (1:21) %>% 
+  na.omit() %>% 
+  mutate (Provincia= "Tucumán") %>% 
+  relocate (Provincia, .before = Departamento) %>% 
+  slice (-1)
+
+```
+
+Uniendo todos los data frames de la estimación poblacional (2016-2020) de los departamentos de las Provincias Argentinas con registro confirmado de casos de dengue.
+
+```{r}
+
+poblacion_total <-bind_rows(list(buenos_aires, caba, catamarca, chaco, cordoba, corrientes, entre_rios, formosa, jujuy, la_pampa, la_rioja, mendoza, misiones, salta, san_juan, san_luis, santa_fe, santiago_del_estero, tucuman)) 
+
+poblacion_total <-poblacion_total %>% 
+  unite(Provincia_Departamento, c("Provincia", "Departamento"))# en realidad podria haber hecho un join con dos condiciones (provincia y departamento) en lugar de hacer unite y luego separate
+
+casos_dengue <- read_csv("Matriz_completa.csv")
+
+casos_dengue <-casos_dengue %>% 
+  unite(Provincia_Departamento, c("Provincia", "Departamento"))
+
+population_dengueCases <- left_join(casos_dengue, poblacion_total, by="Provincia_Departamento") %>% 
+  separate(Provincia_Departamento, c("Provincia", "Departamento"), sep= "_") %>% 
+  rename ("Population_2016" = "2016",
+          "Population_2017" = "2017",
+          "Population_2018" = "2018",
+          "Population_2019" = "2019",
+          "Population_2020" = "2020")
+
+write_excel_csv(population_dengueCases, "population_dengueCases.csv")
+
+```
