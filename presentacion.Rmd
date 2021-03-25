@@ -15,6 +15,7 @@ output:
 options(htmltools.dir.version = FALSE)
 library(knitr)
 library(tidyverse)
+library(xaringan)
 library(xaringanExtra)
 # set default options
 opts_chunk$set(echo=FALSE,
@@ -33,7 +34,7 @@ xaringanExtra::style_share_again(
 ```
 
 
-# Introducción del dengue en la Argentina
+# Introducción del dengue en la Argentina `r emo::ji("mosquito")`
 
 - _Aedes aegypti_ es originario del oeste de África y fue introducido en América probablemente en los barcos de esclavos y en los containers de agua (Fischer et al. 2017).
 
@@ -125,7 +126,7 @@ Cada año se presentan cerca de 390 millones de casos de dengue en el mundo, de 
 
 class: inverse, middle, center
 
-# Pregunta de investigación `r icon::fa("bell")`
+# Pregunta de investigación `r emo::ji ("bulb")`
 
 ###Analizar los cambios espaciotemporales de la incidencia del dengue en Argentina (2015-2020) en relación con los factores ambientales y socioeconómicos que la determinan.
 
@@ -160,7 +161,8 @@ class: top
 --
 
 .pull-right[ 
-V. socioeconomicas
+
+V. socioeconómicas
 
 - Distancia a cementerios
 - Suministros de agua potable
